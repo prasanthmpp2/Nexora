@@ -1,18 +1,19 @@
-import authRoutes from './routes/authRoutes'
-import productRoutes from './routes/productRoutes'
-import orderRoutes from './routes/orderRoutes'
-import express, { Application } from 'express'
+import express, { Application, Request, Response } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import rateLimit from 'express-rate-limit'
 import mongoSanitize from 'express-mongo-sanitize'
 import dotenv from 'dotenv'
-import connectDB from './config/db'
-import mockPaymentRoutes from './routes/mockPaymentRoutes'
-import { errorHandler, notFound } from './middleware/errorHandler'
 
 dotenv.config()
+
+import connectDB from './config/db'
+import authRoutes from './routes/authRoutes'
+import productRoutes from './routes/productRoutes'
+import orderRoutes from './routes/orderRoutes'
+import mockPaymentRoutes from './routes/mockPaymentRoutes'
+import { errorHandler, notFound } from './middleware/errorHandler'
 
 const app: Application = express()
 
@@ -34,7 +35,7 @@ const limiter = rateLimit({
 })
 app.use('/api/', limiter)
 
-// Body Parser
+// Body Parser & Sanitization
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 app.use(mongoSanitize())
@@ -45,14 +46,17 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Health Check
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'OK', message: 'Server is running' })
 })
 
-// API Routes
+// API Routes - IMPORTANT: These must come BEFORE error handlers
+app.use('/api/auth', authRoutes)
+app.use('/api/products', productRoutes)
+app.use('/api/orders', orderRoutes)
 app.use('/api/payments/mock', mockPaymentRoutes)
 
-// Error Handling
+// Error Handling - These must come AFTER all routes
 app.use(notFound)
 app.use(errorHandler)
 
