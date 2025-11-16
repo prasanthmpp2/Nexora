@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@api-url",
+    "NEXT_PUBLIC_RAZORPAY_KEY": "@razorpay-key",
+    "NEXT_PUBLIC_STRIPE_KEY": "@stripe-key"
+  }
+}
