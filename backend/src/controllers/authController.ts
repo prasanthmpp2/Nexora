@@ -19,8 +19,8 @@ export const register = async (req: Request, res: Response) => {
 
     const user = await User.create({ name, email, password })
 
-    const accessToken = generateToken(user._id.toString(), 'access')
-    const refreshToken = generateToken(user._id.toString(), 'refresh')
+    const accessToken = generateToken(String(user._id), 'access')
+    const refreshToken = generateToken(String(user._id), 'refresh')
 
     res.status(201).json({
       _id: user._id,
@@ -49,8 +49,8 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid credentials' })
     }
 
-    const accessToken = generateToken(user._id.toString(), 'access')
-    const refreshToken = generateToken(user._id.toString(), 'refresh')
+    const accessToken = generateToken(String(user._id), 'access')
+    const refreshToken = generateToken(String(user._id), 'refresh')
 
     res.json({
       _id: user._id,
@@ -80,7 +80,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid token' })
     }
 
-    const accessToken = generateToken(user._id.toString(), 'access')
+    const accessToken = generateToken(String(user._id), 'access')
     res.json({ accessToken })
   } catch (error: any) {
     res.status(401).json({ message: 'Invalid or expired refresh token' })
@@ -90,11 +90,16 @@ export const refreshToken = async (req: Request, res: Response) => {
 export const getMe = async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.user.id)
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
     res.json({
-      _id: user!._id,
-      name: user!.name,
-      email: user!.email,
-      role: user!.role,
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
     })
   } catch (error: any) {
     res.status(500).json({ message: error.message })
