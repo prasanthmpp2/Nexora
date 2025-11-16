@@ -11,6 +11,12 @@
     "express-mongo-sanitize": "^2.2.0",
     "morgan": "^1.10.0",
     "uuid": "^9.0.0",
-    "axios": "^1.6.5"
+    "axios": "^1.6.5",
+    "scripts": {
+  "start": "node dist/server.js",
+  "build": "tsc",
+  "dev": "nodemon src/server.ts"
+}
+
   }
 }
