@@ -1,3 +1,6 @@
+import authRoutes from './routes/authRoutes'
+import productRoutes from './routes/productRoutes'
+import orderRoutes from './routes/orderRoutes'
 import express, { Application } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
@@ -6,9 +9,6 @@ import rateLimit from 'express-rate-limit'
 import mongoSanitize from 'express-mongo-sanitize'
 import dotenv from 'dotenv'
 import connectDB from './config/db'
-import authRoutes from './routes/authRoutes'
-import productRoutes from './routes/productRoutes'
-import orderRoutes from './routes/orderRoutes'
 import mockPaymentRoutes from './routes/mockPaymentRoutes'
 import { errorHandler, notFound } from './middleware/errorHandler'
 
@@ -34,7 +34,7 @@ const limiter = rateLimit({
 })
 app.use('/api/', limiter)
 
-// Body Parser & Sanitization
+// Body Parser
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 app.use(mongoSanitize())
@@ -50,9 +50,6 @@ app.get('/health', (req, res) => {
 })
 
 // API Routes
-app.use('/api/auth', authRoutes)
-app.use('/api/products', productRoutes)
-app.use('/api/orders', orderRoutes)
 app.use('/api/payments/mock', mockPaymentRoutes)
 
 // Error Handling
